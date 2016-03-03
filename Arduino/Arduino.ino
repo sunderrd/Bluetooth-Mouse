@@ -12,6 +12,7 @@ const byte down = 5;
 const byte left_click = 7;
 const byte right_click = 8;
 const byte dial = A0;
+const byte test_led = 13;
 //-----------------------//
 
 //----------Globals----------//
@@ -29,6 +30,7 @@ void setup() {
   pinMode(down, INPUT);
   pinMode(left_click, INPUT);
   pinMode(right_click, INPUT);
+  pinMode(test_led, OUTPUT);
 }
 //-------------------------//
 
@@ -56,6 +58,7 @@ void loop() {
 
 //--
 void moveMouse() {
+  buttons = 0;
   if (hasCommand()) {
     
     //Horizontal movement
@@ -68,12 +71,29 @@ void moveMouse() {
     else if (digitalRead(down) && !digitalRead(up)) move_y = 1;
     else move_y = 0;
     
-    //Buttons
-    if (digitalRead(left_click)) buttons |= (1 << 1);
-    if (digitalRead(right_click)) buttons |= (1 << 2);
+    //Buttons HERE
+    if (digitalRead(left_click)) buttons = 0x1;
+    else if (digitalRead(right_click)) buttons = 0x2;
+    else buttons = 0x0;
     
     mouseCommand(buttons, move_x*move_speed, move_y*move_speed);
   }
+  
+  //"Lets go" of button commands when buttons are released
+  /*if(released(left_click) || released(right_click)) {
+    mouseCommand(0,0,0);
+    digitalWrite(test_led, HIGH);
+  } else digitalWrite(test_led, LOW);*/
+}
+
+boolean released(byte button) {
+  boolean pressed, released = false;
+  if (digitalRead(button)) pressed = true;
+  if (pressed && !digitalRead(button)) {
+    released = true;
+    pressed = false;
+  }
+  return released;
 }
 
 //--Returns true if any button is pressed, there is a command from the mouse
