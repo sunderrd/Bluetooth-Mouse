@@ -1,6 +1,11 @@
 // Created by: Ryan Sunderhaus
 
 // Completed xx/xx/2016
+// To do:
+// -Set speed
+// -Fix buttons
+// -Scrolling
+// -Make code look nice
 
 //----------PINS---------//
 const byte rx_pin = 0;
@@ -16,9 +21,7 @@ const byte test_led = 13;
 //-----------------------//
 
 //----------Globals----------//
-byte move_x, move_y = 0;
 int move_speed = 10;
-byte buttons;
 //---------------------------//
 
 //----------Setup----------//
@@ -36,64 +39,48 @@ void setup() {
 
 
 void loop() {
-  moveMouse();
+  byte move_x, move_y = 0;
+  byte buttons = 0;
   
-  /*if (digitalRead(down) == HIGH) mouseCommand(0, 0, 10);
-  else if (digitalRead(right) == HIGH) mouseCommand(0, 10, 0);
-  else if (digitalRead(up) == HIGH) mouseCommand(0, 0, -10);
-  //mouseCommand(0,0,0);*/
+  move_x = setMoveX();
+  move_y = setMoveY();
+  buttons = setButtons();
   
-  /*move_x = 0;
-  move_y = 0;
-  if (digitalRead(left) == HIGH) move_x = -10;
-  if (digitalRead(right) == HIGH) move_x = 10;
-  if (digitalRead(up) == HIGH) move_y = -10;
-  if (digitalRead(down) == HIGH) move_y = 10;
-  
-  
-  mouseCommand(buttons, move_x, move_y);*/
-  
-  //Serial.println(analogRead(dial));
+  if (hasCommand()) {    
+    mouseCommand(buttons, move_x, move_y);
+  }
 }
 
 //--
-void moveMouse() {
-  buttons = 0;
-  if (hasCommand()) {
-    
-    //Horizontal movement
-    if (digitalRead(left) && !digitalRead(right)) move_x = -1;
-    else if (digitalRead(right) && !digitalRead(left)) move_x = 1;
-    else move_x = 0;
-    
-    //Vertical movement
-    if (digitalRead(up) && !digitalRead(down)) move_y = -1;
-    else if (digitalRead(down) && !digitalRead(up)) move_y = 1;
-    else move_y = 0;
-    
-    //Buttons HERE
-    if (digitalRead(left_click)) buttons = 0x1;
-    else if (digitalRead(right_click)) buttons = 0x2;
-    else buttons = 0x0;
-    
-    mouseCommand(buttons, move_x*move_speed, move_y*move_speed);
-  }
-  
-  //"Lets go" of button commands when buttons are released
-  /*if(released(left_click) || released(right_click)) {
-    mouseCommand(0,0,0);
-    digitalWrite(test_led, HIGH);
-  } else digitalWrite(test_led, LOW);*/
+byte setButtons() {
+  byte buttons = 0;
+  if (digitalRead(left_click)) buttons = 0x1;
+  else if (digitalRead(right_click)) buttons = 0x2;
+  else buttons = 0x0;
+  return buttons;
 }
 
-boolean released(byte button) {
-  boolean pressed, released = false;
-  if (digitalRead(button)) pressed = true;
-  if (pressed && !digitalRead(button)) {
-    released = true;
-    pressed = false;
-  }
-  return released;
+//--Determine y movement direction
+byte setMoveY() {
+    byte y = 0;
+  if (digitalRead(up) && !digitalRead(down)) y = -1;
+  else if (digitalRead(down) && !digitalRead(up)) y = 1;
+  else y = 0;
+  return y*setMoveSpeed();
+}
+
+//--Determine x movement direction
+byte setMoveX() {
+  byte x = 0;
+  if (digitalRead(left) && !digitalRead(right)) x = -1;
+  else if (digitalRead(right) && !digitalRead(left)) x = 1;
+  else x = 0;
+  return x*setMoveSpeed();
+}
+
+//--Sets speed of mouse movements based on dial
+byte setMoveSpeed() {
+  return analogRead(dial)/100;
 }
 
 //--Returns true if any button is pressed, there is a command from the mouse
@@ -109,7 +96,51 @@ void mouseCommand(uint8_t buttons, uint8_t x, uint8_t y) {
   Serial.write(buttons);
   Serial.write(x);
   Serial.write(y);
-  Serial.write((byte)0x00);
-  Serial.write((byte)0x00);
+  Serial.write((byte)0x00); //v scroll control??
+  Serial.write((byte)0x00); //h
   Serial.write((byte)0x00);
 }
+
+
+/*------UNUSED-------/*
+
+
+
+boolean released(byte button) {
+  boolean pressed, released = false;
+  if (digitalRead(button)) pressed = true;
+  if (pressed && !digitalRead(button)) {
+    released = true;
+    pressed = false;
+  }
+  return released;
+}
+
+
+
+/*if (digitalRead(down) == HIGH) mouseCommand(0, 0, 10);
+  else if (digitalRead(right) == HIGH) mouseCommand(0, 10, 0);
+  else if (digitalRead(up) == HIGH) mouseCommand(0, 0, -10);
+  //mouseCommand(0,0,0);*/
+  
+  /*move_x = 0;
+  move_y = 0;
+  if (digitalRead(left) == HIGH) move_x = -10;
+  if (digitalRead(right) == HIGH) move_x = 10;
+  if (digitalRead(up) == HIGH) move_y = -10;
+  if (digitalRead(down) == HIGH) move_y = 10;
+  
+  
+  mouseCommand(buttons, move_x, move_y);*/
+  
+  //Serial.println(analogRead(dial));
+  
+  
+  
+  
+  
+   //"Lets go" of button commands when buttons are released
+  /*if(released(left_click) || released(right_click)) {
+    mouseCommand(0,0,0);
+    digitalWrite(test_led, HIGH);
+  } else digitalWrite(test_led, LOW);*/
