@@ -2,7 +2,6 @@
 
 // Completed xx/xx/2016
 // To do:
-// -Set speed
 // -Fix buttons
 // -Scrolling
 // -Make code look nice
@@ -51,7 +50,7 @@ void loop() {
   }
 }
 
-//--
+//--Determine the bitmask for button commands
 byte setButtons() {
   byte buttons = 0;
   if (digitalRead(left_click)) buttons = 0x1;
