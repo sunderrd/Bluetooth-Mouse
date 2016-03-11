@@ -8,8 +8,8 @@ void mouseCommand(uint8_t buttons, uint8_t x, uint8_t y) {
   Serial.write(buttons);
   Serial.write(x);
   Serial.write(y);
-  Serial.write((byte)0x00); //v scroll control??
-  Serial.write((byte)0x00); //h
+  Serial.write((byte)0x00);
+  Serial.write((byte)0x00);
   Serial.write((byte)0x00);
 }
 
