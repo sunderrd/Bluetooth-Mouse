@@ -1,10 +1,6 @@
 // Created by: Ryan Sunderhaus
 
-// Completed xx/xx/2016
-// To do:
-// -Fix buttons
-// -Scrolling
-// -Make code look nice
+// Completed 3/11/2016
 
 //----------PINS---------//
 const byte rx_pin = 0;
@@ -18,10 +14,6 @@ const byte right_click = 8;
 const byte dial = A0;
 const byte test_led = 13;
 //-----------------------//
-
-//----------Globals----------//
-int move_speed = 10;
-//---------------------------//
 
 //----------Setup----------//
 void setup() {
@@ -88,6 +80,7 @@ boolean hasCommand() {
 }
 
 //--Sends proper serial codes to Bluefruit for mouse commands based on x, y, and buttons
+//--Provided by Adafruit at https://learn.adafruit.com/introducing-bluefruit-ez-key-diy-bluetooth-hid-keyboard/sending-keys-via-serial#raw-hid-mouse-reports
 void mouseCommand(uint8_t buttons, uint8_t x, uint8_t y) {
   Serial.write(0xFD);
   Serial.write((byte)0x00);
@@ -100,46 +93,3 @@ void mouseCommand(uint8_t buttons, uint8_t x, uint8_t y) {
   Serial.write((byte)0x00);
 }
 
-
-/*------UNUSED-------/*
-
-
-
-boolean released(byte button) {
-  boolean pressed, released = false;
-  if (digitalRead(button)) pressed = true;
-  if (pressed && !digitalRead(button)) {
-    released = true;
-    pressed = false;
-  }
-  return released;
-}
-
-
-
-/*if (digitalRead(down) == HIGH) mouseCommand(0, 0, 10);
-  else if (digitalRead(right) == HIGH) mouseCommand(0, 10, 0);
-  else if (digitalRead(up) == HIGH) mouseCommand(0, 0, -10);
-  //mouseCommand(0,0,0);*/
-  
-  /*move_x = 0;
-  move_y = 0;
-  if (digitalRead(left) == HIGH) move_x = -10;
-  if (digitalRead(right) == HIGH) move_x = 10;
-  if (digitalRead(up) == HIGH) move_y = -10;
-  if (digitalRead(down) == HIGH) move_y = 10;
-  
-  
-  mouseCommand(buttons, move_x, move_y);*/
-  
-  //Serial.println(analogRead(dial));
-  
-  
-  
-  
-  
-   //"Lets go" of button commands when buttons are released
-  /*if(released(left_click) || released(right_click)) {
-    mouseCommand(0,0,0);
-    digitalWrite(test_led, HIGH);
-  } else digitalWrite(test_led, LOW);*/
